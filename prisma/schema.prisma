@@ -7,36 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
-  role    Role     @default(USER)
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  password String
+  files    File[]
+  folders  Folder[]
 }
 
-enum Role {
-  USER
-  ADMIN
+model File {
+  id         Int      @id @default(autoincrement())
+  uploadedAt DateTime @default(now())
+  title      String   @db.VarChar(255)
+  url        String
+  owner      User     @relation(fields: [ownerId], references: [id])
+  ownerId    Int
+  folder     Folder   @relation(fields: [folderId], references: [id])
+  folderId   Int
+}
+
+model Folder {
+  id      Int    @id @default(autoincrement())
+  title   String @db.VarChar(255)
+  files   File[]
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId Int
 }
 
 //run "npx prisma generate" after updating models

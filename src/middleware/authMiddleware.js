@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
-import prisma from '../config/database'; // Assuming you are using Prisma for database access
+import prisma from '../config/database';
 
 const verifyToken = promisify(jwt.verify);
 
