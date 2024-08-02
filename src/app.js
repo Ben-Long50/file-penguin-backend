@@ -8,6 +8,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import userRouter from './routes/userRoutes.js';
+import folderRouter from './routes/folderRouter.js';
+import fileRouter from './routes/fileRouter.js';
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.use(limiter);
 app.use(cors());
 
 app.use('/', userRouter);
+app.use('/', folderRouter);
+app.use('/', fileRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

@@ -18,20 +18,23 @@ model User {
 model File {
   id         Int      @id @default(autoincrement())
   uploadedAt DateTime @default(now())
-  title      String   @db.VarChar(255)
+  title      String?  @db.VarChar(255)
   url        String
   owner      User     @relation(fields: [ownerId], references: [id])
   ownerId    Int
-  folder     Folder   @relation(fields: [folderId], references: [id])
-  folderId   Int
+  folder     Folder?  @relation(fields: [folderId], references: [id])
+  folderId   Int?
 }
 
 model Folder {
-  id      Int    @id @default(autoincrement())
-  title   String @db.VarChar(255)
-  files   File[]
-  owner   User   @relation(fields: [ownerId], references: [id])
-  ownerId Int
+  id             Int      @id @default(autoincrement())
+  title          String   @db.VarChar(255)
+  files          File[]
+  childFolders   Folder[] @relation("childFolders")
+  parentFolder   Folder?  @relation("childFolders", fields: [parentFolderId], references: [id])
+  parentFolderId Int?
+  owner          User     @relation(fields: [ownerId], references: [id])
+  ownerId        Int
 }
 
 //run "npx prisma generate" after updating models

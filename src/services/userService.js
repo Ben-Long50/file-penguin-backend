@@ -1,34 +1,42 @@
 import prisma from '../config/database.js';
 
 const userServices = {
-  getAllUsers: async () => {
-    try {
-      const users = await prisma.user.findMany();
-      return users;
-    } catch (error) {
-      throw new Error('Failed to fetch users');
-    }
-  },
-
-  getUserById: async (id) => {
+  getUserById: async (userId) => {
     try {
       const user = await prisma.user.findUnique({
-        where: { id: Number(id) },
+        where: { id: userId },
       });
       return user;
     } catch (error) {
-      throw new Error('Failed to fetch user');
+      throw new Error('Failed to find user');
     }
   },
 
   createUser: async (userData) => {
     try {
       const newUser = await prisma.user.create({
-        data: userData,
+        data: {
+          username: userData.username,
+          password: userData.password,
+          folders: {
+            create: [{ title: 'All files' }, { title: 'Trash' }],
+          },
+        },
       });
       return newUser;
     } catch (error) {
       throw new Error('Failed to create user');
+    }
+  },
+
+  getUserByUsername: async (username) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { username },
+      });
+      return user;
+    } catch (error) {
+      throw new Error('Failed to find user');
     }
   },
 };
