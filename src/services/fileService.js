@@ -27,7 +27,8 @@ const fileServices = {
     }
   },
 
-  uploadFile: async (fileData) => {
+  createFile: async (fileData) => {
+    console.log(fileData);
     try {
       const file = await prisma.file.create({
         data: fileData,

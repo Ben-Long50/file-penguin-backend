@@ -7,7 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
-import userRouter from './routes/userRoutes.js';
+import userRouter from './routes/userRouter.js';
 import folderRouter from './routes/folderRouter.js';
 import fileRouter from './routes/fileRouter.js';
 
@@ -24,11 +24,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 
-app.use(limiter);
+// app.use(limiter);
 app.use(cors());
 
 app.use('/', userRouter);

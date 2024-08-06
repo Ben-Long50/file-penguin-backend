@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
-import userServices from '../services/userService';
+import userServices from '../services/userService.js';
 
 const verifyToken = promisify(jwt.verify);
-
 const authMiddleware = async (req, res, next) => {
   try {
     const token =
@@ -17,8 +16,7 @@ const authMiddleware = async (req, res, next) => {
 
     const decoded = await verifyToken(token, process.env.JWT_SECRET);
 
-    const user = await userServices.getUserById(decoded.id);
-
+    const user = await userServices.getUserById(decoded.user.id);
     if (!user) {
       return res.status(401).json({ error: 'Access denied. User not found.' });
     }

@@ -20,9 +20,9 @@ model File {
   uploadedAt DateTime @default(now())
   title      String?  @db.VarChar(255)
   url        String
-  owner      User     @relation(fields: [ownerId], references: [id])
-  ownerId    Int
-  folder     Folder?  @relation(fields: [folderId], references: [id])
+  owner      User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    Int?
+  folder     Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId   Int?
 }
 
@@ -31,10 +31,10 @@ model Folder {
   title          String   @db.VarChar(255)
   files          File[]
   childFolders   Folder[] @relation("childFolders")
-  parentFolder   Folder?  @relation("childFolders", fields: [parentFolderId], references: [id])
+  parentFolder   Folder?  @relation("childFolders", fields: [parentFolderId], references: [id], onDelete: Cascade)
   parentFolderId Int?
-  owner          User     @relation(fields: [ownerId], references: [id])
-  ownerId        Int
+  owner          User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId        Int?
 }
 
 //run "npx prisma generate" after updating models

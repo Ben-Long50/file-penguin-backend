@@ -5,9 +5,14 @@ import fileController from '../controllers/fileController.js';
 
 const router = express.Router();
 
-router.post('/files', cors(), authMiddleware, fileController.uploadFile);
+router.post(
+  '/folders/:folderId/files',
+  cors(),
+  authMiddleware,
+  fileController.uploadFiles,
+);
 
-router.get('/files', cors(), authMiddleware, fileController.getAllFilesByUser);
+router.get('/files', cors(), authMiddleware, fileController.getAllFiles);
 
 router.get(
   '/files/:fileId',

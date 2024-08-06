@@ -98,10 +98,22 @@ const userController = {
 
       try {
         const user = await userServices.getUserByUsername(req.body.username);
-        const token = jwt.sign({ user }, process.env.JWT_SECRET, {
-          expiresIn: '4h',
-        });
-        res.status(200).json({ token });
+        jwt.sign(
+          { user },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: '4h',
+          },
+          (err, token) => {
+            if (err) {
+              res.status(500).json({ message: 'Error generating token' });
+            }
+            res.status(200).json({
+              token,
+              user,
+            });
+          },
+        );
       } catch (error) {
         res.status(500).json({ error: error.message });
       }

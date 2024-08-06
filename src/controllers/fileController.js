@@ -12,15 +12,16 @@ const fileController = {
     }
   },
 
-  uploadFile: [
-    upload.array('files'),
+  uploadFiles: [
+    upload.array('file'),
     uploadToCloudinary,
     async (req, res) => {
       try {
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
-          folderId: req.params.folderId,
-          url,
+          folderId: Number(req.params.folderId),
+          url: url.url,
+          title: url.original_filename,
         }));
         const uploadedFiles = await Promise.all(
           filesData.map((data) => fileServices.createFile(data)),

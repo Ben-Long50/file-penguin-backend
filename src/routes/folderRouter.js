@@ -16,6 +16,20 @@ router.get(
   folderController.getContentsInFolder,
 );
 
+router.post(
+  '/folders/:folderId',
+  cors(),
+  authMiddleware,
+  folderController.changeFolderName,
+);
+
+router.put(
+  '/folders/:folderId',
+  cors(),
+  authMiddleware,
+  folderController.addChildToFolder,
+);
+
 router.delete(
   '/folders/:folderId',
   cors(),
