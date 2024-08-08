@@ -54,7 +54,7 @@ const folderController = {
           const folders = await folderServices.createFolder(folderData);
           res.status(200).json(folders);
         } catch (error) {
-          res.status(500).json({ error: error.message });
+          res.status(500).json([{ msg: error.message }]);
         }
       }
     },
@@ -78,7 +78,7 @@ const folderController = {
           );
           res.status(200).json(folder.title);
         } catch (error) {
-          res.status(500).json({ error: error.message });
+          res.status(500).json([{ msg: error.message }]);
         }
       }
     },
