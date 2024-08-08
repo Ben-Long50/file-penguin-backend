@@ -29,7 +29,7 @@ const fileController = {
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
           folderId: Number(req.params.folderId),
-          url: url.url,
+          url: url.secure_url,
           title: parseTitle(url.original_filename, url.format),
         }));
         const uploadedFiles = await Promise.all(
