@@ -38,7 +38,16 @@ const folderServices = {
           files: true,
         },
       });
-      return folder;
+      const parentFolder = await prisma.folder.findUnique({
+        where: {
+          id: folder.parentFolderId,
+        },
+        include: {
+          childFolders: true,
+          files: true,
+        },
+      });
+      return { folder, parentFolder };
     } catch (error) {
       throw new Error('Failed to create folder');
     }
@@ -70,13 +79,18 @@ const folderServices = {
             files: true,
           },
         });
-        const parentFolder = await prisma.folder.findUnique({
-          where: { id: folderId },
-          include: {
-            childFolders: true,
-            files: true,
-          },
-        });
+        let parentFolder;
+        if (folderId !== null) {
+          parentFolder = await prisma.folder.findUnique({
+            where: { id: folderId },
+            include: {
+              childFolders: true,
+              files: true,
+            },
+          });
+        } else {
+          parentFolder = null;
+        }
 
         let oldParentFolder = null;
         if (oldParentId && oldParentId.parentFolderId) {

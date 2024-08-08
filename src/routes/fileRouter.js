@@ -12,6 +12,13 @@ router.post(
   fileController.uploadFiles,
 );
 
+router.post(
+  '/files/:fileId',
+  cors(),
+  authMiddleware,
+  fileController.changeFileName,
+);
+
 router.get('/files', cors(), authMiddleware, fileController.getAllFiles);
 
 router.get(

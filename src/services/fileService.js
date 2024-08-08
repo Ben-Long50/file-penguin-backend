@@ -3,9 +3,26 @@ import prisma from '../config/database.js';
 const fileServices = {
   getAllFilesByUser: async (userId) => {
     try {
+      const trashFolder = await prisma.folder.findFirst({
+        where: {
+          ownerId: userId,
+          title: 'Trash',
+        },
+        select: { id: true },
+      });
       const files = await prisma.file.findMany({
         where: {
           ownerId: userId,
+          OR: [
+            {
+              folderId: {
+                not: trashFolder?.id,
+              },
+            },
+            {
+              folderId: null,
+            },
+          ],
         },
       });
       return files;
@@ -38,32 +55,49 @@ const fileServices = {
     }
   },
 
+  changeFileName: async (fileId, fileTitle) => {
+    const file = await prisma.file.update({
+      where: { id: fileId },
+      data: { title: fileTitle },
+    });
+    return file;
+  },
+
   addFileToFolder: async (folderId, fileId) => {
     try {
       const oldFileData = await prisma.file.findUnique({
         where: { id: fileId },
         select: { folderId: true },
       });
-      console.log(oldFileData);
-      const newFileData = await prisma.file.update({
+      await prisma.file.update({
         where: { id: fileId },
         data: { folderId },
       });
-      console.log(newFileData);
-      const newParentFolder = await prisma.folder.findUnique({
-        where: { id: folderId },
-        include: {
-          childFolders: true,
-          files: true,
-        },
-      });
-      const oldParentFolder = await prisma.folder.findUnique({
-        where: { id: oldFileData.folderId },
-        include: {
-          childFolders: true,
-          files: true,
-        },
-      });
+      let newParentFolder;
+      if (folderId !== null) {
+        newParentFolder = await prisma.folder.findUnique({
+          where: { id: folderId },
+          include: {
+            childFolders: true,
+            files: true,
+          },
+        });
+      } else {
+        newParentFolder = null;
+      }
+      let oldParentFolder;
+      if (oldFileData.folderId !== null) {
+        oldParentFolder = await prisma.folder.findUnique({
+          where: { id: oldFileData.folderId },
+          include: {
+            childFolders: true,
+            files: true,
+          },
+        });
+      } else {
+        oldParentFolder = null;
+      }
+
       return { newParentFolder, oldParentFolder };
     } catch (error) {
       throw new Error('Failed to add child');

@@ -51,9 +51,8 @@ const folderController = {
               },
             }),
           };
-          console.log(folderData);
-          const newFolder = await folderServices.createFolder(folderData);
-          res.status(200).json(newFolder);
+          const folders = await folderServices.createFolder(folderData);
+          res.status(200).json(folders);
         } catch (error) {
           res.status(500).json({ error: error.message });
         }

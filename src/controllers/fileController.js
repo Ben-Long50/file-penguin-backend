@@ -1,3 +1,4 @@
+import { body, validationResult } from 'express-validator';
 import fileServices from '../services/fileService.js';
 import { upload, checkFileCount } from '../utils/multer.js';
 import uploadToCloudinary from '../utils/cloudinary.js';
@@ -6,6 +7,7 @@ const fileController = {
   getAllFiles: async (req, res) => {
     try {
       const files = await fileServices.getAllFilesByUser(req.user.id);
+      console.log(files);
       res.status(200).json(files);
     } catch (error) {
       res.send(500).json({ error: error.message });
@@ -22,6 +24,7 @@ const fileController = {
         const newTitle = parsedTitle.join('-').concat(`.${format}`);
         return newTitle;
       };
+      console.log(req.fileUrls);
       try {
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
@@ -47,6 +50,30 @@ const fileController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  changeFileName: [
+    body('fileTitle', 'Name must be a minimum of 1 character')
+      .trim()
+      .isLength({ min: 1 })
+      .escape(),
+
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json(errors.array());
+      } else {
+        try {
+          const file = await fileServices.changeFileName(
+            req.body.fileId,
+            req.body.fileTitle,
+          );
+          res.status(200).json(file);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      }
+    },
+  ],
 
   addFileToFolder: async (req, res) => {
     try {
