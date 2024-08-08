@@ -28,7 +28,6 @@ const fileServices = {
   },
 
   createFile: async (fileData) => {
-    console.log(fileData);
     try {
       const file = await prisma.file.create({
         data: fileData,
@@ -36,6 +35,38 @@ const fileServices = {
       return file;
     } catch (error) {
       throw new Error('Failed to create folder');
+    }
+  },
+
+  addFileToFolder: async (folderId, fileId) => {
+    try {
+      const oldFileData = await prisma.file.findUnique({
+        where: { id: fileId },
+        select: { folderId: true },
+      });
+      console.log(oldFileData);
+      const newFileData = await prisma.file.update({
+        where: { id: fileId },
+        data: { folderId },
+      });
+      console.log(newFileData);
+      const newParentFolder = await prisma.folder.findUnique({
+        where: { id: folderId },
+        include: {
+          childFolders: true,
+          files: true,
+        },
+      });
+      const oldParentFolder = await prisma.folder.findUnique({
+        where: { id: oldFileData.folderId },
+        include: {
+          childFolders: true,
+          files: true,
+        },
+      });
+      return { newParentFolder, oldParentFolder };
+    } catch (error) {
+      throw new Error('Failed to add child');
     }
   },
 

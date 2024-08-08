@@ -13,7 +13,7 @@ router.get(
   '/folders/:folderId',
   cors(),
   authMiddleware,
-  folderController.getContentsInFolder,
+  folderController.getFolderContents,
 );
 
 router.post(
@@ -27,14 +27,14 @@ router.put(
   '/folders/:folderId',
   cors(),
   authMiddleware,
-  folderController.addChildToFolder,
+  folderController.addFolderToFolder,
 );
 
 router.delete(
   '/folders/:folderId',
   cors(),
   authMiddleware,
-  folderController.deleteFolder,
+  folderController.deleteTrashContents,
 );
 
 export default router;

@@ -14,17 +14,15 @@ const folderController = {
     }
   },
 
-  getContentsInFolder: async (req, res) => {
+  getFolderContents: async (req, res) => {
     try {
       const folderId = Number(req.params.folderId);
-      const [folders, files] = await Promise.all([
-        folderServices.getFoldersInFolder(folderId),
-        folderServices.getFilesInFolder(folderId),
-      ]);
-      if (!folders && !files) {
+      const folderData = await folderServices.getFolderContents(folderId);
+
+      if (!folderData) {
         return res.status(404).json({ error: 'Folders and files not found' });
       }
-      res.status(200).json({ folders, files });
+      res.status(200).json(folderData);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -47,8 +45,13 @@ const folderController = {
             owner: {
               connect: { id: req.user.id },
             },
+            ...(req.body.parentFolderId && {
+              parentFolder: {
+                connect: { id: req.body.parentFolderId },
+              },
+            }),
           };
-
+          console.log(folderData);
           const newFolder = await folderServices.createFolder(folderData);
           res.status(200).json(newFolder);
         } catch (error) {
@@ -82,9 +85,9 @@ const folderController = {
     },
   ],
 
-  addChildToFolder: async (req, res) => {
+  addFolderToFolder: async (req, res) => {
     try {
-      const parentFolder = await folderServices.addChildToFolder(
+      const parentFolder = await folderServices.addFolderToFolder(
         req.body.folderId,
         req.body.childId,
       );
@@ -94,10 +97,12 @@ const folderController = {
     }
   },
 
-  deleteFolder: async (req, res) => {
+  deleteTrashContents: async (req, res) => {
     try {
-      const folder = await folderServices.deleteFolder(req.body.folderId);
-      res.status(200).json(folder);
+      const trashFolder = await folderServices.deleteTrashContents(
+        req.body.folderId,
+      );
+      res.status(200).json(trashFolder);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

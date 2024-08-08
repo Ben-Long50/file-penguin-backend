@@ -21,6 +21,13 @@ router.get(
   fileController.downloadFile,
 );
 
+router.put(
+  '/files/:fileId',
+  cors(),
+  authMiddleware,
+  fileController.addFileToFolder,
+);
+
 router.delete(
   '/files/:fileId',
   cors(),

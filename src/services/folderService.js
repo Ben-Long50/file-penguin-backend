@@ -16,28 +16,16 @@ const folderServices = {
     }
   },
 
-  getFoldersInFolder: async (folderId) => {
+  getFolderContents: async (folderId) => {
     try {
       const folder = await prisma.folder.findUnique({
         where: { id: folderId },
-        select: { childFolders: true },
+        include: { childFolders: true, files: true },
       });
 
-      return folder.childFolders;
+      return folder;
     } catch (error) {
       throw new Error('Failed to fetch child folders');
-    }
-  },
-
-  getFilesInFolder: async (folderId) => {
-    try {
-      const folder = await prisma.folder.findUnique({
-        where: { id: folderId },
-        select: { files: true },
-      });
-      return folder.files;
-    } catch (error) {
-      throw new Error('Failed to fetch files');
     }
   },
 
@@ -64,7 +52,7 @@ const folderServices = {
     return folder;
   },
 
-  addChildToFolder: async (folderId, childId) => {
+  addFolderToFolder: async (folderId, childId) => {
     const childIds = await getFolderChildren(childId);
     if (childIds.includes(folderId)) {
       throw new Error('Cannot move parent folder into a child folder');
@@ -100,7 +88,6 @@ const folderServices = {
             },
           });
         }
-
         return { parentFolder, childFolder, oldParentFolder };
       } catch (error) {
         throw new Error('Failed to add child');
@@ -108,26 +95,22 @@ const folderServices = {
     }
   },
 
-  deleteFolder: async (folderId) => {
+  deleteTrashContents: async (folderId) => {
     try {
-      await prisma.file.updateMany({
+      await prisma.file.deleteMany({
         where: { folderId },
-        data: { folderId: null },
       });
-      const folder = await prisma.folder.delete({
+      await prisma.folder.deleteMany({
         where: {
-          id: folderId,
-          title: {
-            notIn: ['Trash', 'All files'],
-          },
+          parentFolderId: folderId,
         },
       });
-      return folder;
+      const trashFolder = await prisma.folder.findUnique({
+        where: { id: folderId },
+      });
+      return trashFolder;
     } catch (error) {
-      if (error.code === 'P2025') {
-        throw new Error('Folder not found');
-      }
-      throw new Error('Failed to delete folder');
+      throw new Error('Failed to delete trash contents');
     }
   },
 };
