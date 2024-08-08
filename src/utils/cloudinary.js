@@ -14,7 +14,6 @@ const uploadToCloudinary = async (req, res, next) => {
         cloudinary.uploader.upload(file.path),
       );
       req.fileUrls = await Promise.all(uploadPromises);
-      console.log(req.fileUrls);
       next();
     } catch (error) {
       res.send(500).json({ error: error.message });

@@ -24,7 +24,6 @@ const fileController = {
         const newTitle = parsedTitle.join('-').concat(`.${format}`);
         return newTitle;
       };
-      console.log(req.fileUrls);
       try {
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
@@ -37,7 +36,7 @@ const fileController = {
         );
         res.status(200).json(uploadedFiles);
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json([{ msg: error.message }]);
       }
     },
   ],

@@ -51,7 +51,7 @@ const fileServices = {
       });
       return file;
     } catch (error) {
-      throw new Error('Failed to create folder');
+      throw new Error('Failed to upload file');
     }
   },
 
