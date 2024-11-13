@@ -25,6 +25,8 @@ const fileController = {
         return newTitle;
       };
       try {
+        console.log(req.fileUrls);
+
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
           folderId: Number(req.params.folderId),
@@ -35,7 +37,6 @@ const fileController = {
         const uploadedFiles = await Promise.all(
           filesData.map((data) => fileServices.createFile(data)),
         );
-        console.log(uploadedFiles);
         res.status(200).json(uploadedFiles);
       } catch (error) {
         res.status(500).json([{ msg: error.message }]);

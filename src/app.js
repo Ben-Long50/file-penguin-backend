@@ -16,6 +16,13 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const limiter = rateLimit({
+  windowMs: 2 * 60 * 1000,
+  max: 100,
+});
+
+app.use(cors());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -23,13 +30,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 
-const limiter = rateLimit({
-  windowMs: 2 * 60 * 1000,
-  max: 100,
-});
-
 app.use(limiter);
-app.use(cors());
 
 app.use('/', userRouter);
 app.use('/', folderRouter);

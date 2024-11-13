@@ -10,6 +10,7 @@ const folderServices = {
           files: true,
         },
       });
+
       return folders;
     } catch (error) {
       throw new Error('Failed to fetch folders');
