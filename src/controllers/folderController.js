@@ -1,5 +1,6 @@
 import { body, validationResult } from 'express-validator';
 import folderServices from '../services/folderService.js';
+import fileServices from '../services/fileService.js';
 
 const folderController = {
   getFolders: async (req, res) => {
@@ -96,13 +97,50 @@ const folderController = {
     }
   },
 
-  deleteTrashContents: async (req, res) => {
+  deleteFolderAndContents: async (req, res) => {
     try {
-      const trashFolder = await folderServices.deleteTrashContents(
+      const folderContents = await folderServices.getNestedContents(
         req.body.folderId,
       );
-      res.status(200).json(trashFolder);
+
+      const deleteFilePromises = folderContents.fileIds.map(async (id) =>
+        fileServices.deleteFile(id),
+      );
+
+      await Promise.all(deleteFilePromises);
+
+      await folderServices.deleteFolder(req.body.folderId);
+
+      res.status(200).json({ message: 'Folder deleted successfully' });
     } catch (error) {
+      console.error(error.message);
+
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  deleteTrashContents: async (req, res) => {
+    try {
+      const trashContents = await folderServices.getNestedContents(
+        req.body.folderId,
+      );
+      const deleteFilePromises = trashContents.fileIds.map(async (id) =>
+        fileServices.deleteFile(id),
+      );
+
+      await Promise.all(deleteFilePromises);
+
+      const foldersToDelete = trashContents.folderIds.slice(1);
+
+      const trashFolder = await folderServices.deleteFolders(
+        req.body.folderId,
+        foldersToDelete,
+      );
+
+      res.status(200).json({ trashFolder, message: 'Trash contents deleted' });
+    } catch (error) {
+      console.error(error.message);
+
       res.status(500).json({ error: error.message });
     }
   },

@@ -20,6 +20,7 @@ model File {
   uploadedAt DateTime @default(now())
   title      String?  @db.VarChar(255)
   url        String
+  uploadId   String
   ext        String
   owner      User?    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId    Int?

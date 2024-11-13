@@ -27,9 +27,15 @@ router.put(
 );
 
 router.delete(
-  '/folders/:folderId',
+  '/folders/:folderId/trash',
   authMiddleware,
   folderController.deleteTrashContents,
+);
+
+router.delete(
+  '/folders/:folderId',
+  authMiddleware,
+  folderController.deleteFolderAndContents,
 );
 
 export default router;

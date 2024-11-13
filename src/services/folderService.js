@@ -30,6 +30,45 @@ const folderServices = {
     }
   },
 
+  getNestedContents: async (folderId) => {
+    try {
+      const getNestedIds = async (parentId) => {
+        const folder = await prisma.folder.findUnique({
+          where: { id: parentId },
+          include: { childFolders: true, files: true },
+        });
+
+        const folderIds = [folder.id];
+
+        const fileIds = folder.files.map((file) => file.id);
+
+        if (folder && folder.childFolders.length > 0) {
+          const childFolderPromises = folder.childFolders.map(
+            async (childFolder) => getNestedIds(childFolder.id),
+          );
+
+          const childIds = await Promise.all(childFolderPromises);
+          const allFolderIds = folderIds.concat(
+            childIds.map((child) => child.folderIds).flat(),
+          );
+          const allFileIds = fileIds.concat(
+            childIds.map((child) => child.fileIds).flat(),
+          );
+
+          return { folderIds: allFolderIds, fileIds: allFileIds };
+        }
+
+        return { folderIds, fileIds };
+      };
+
+      const { folderIds, fileIds } = await getNestedIds(folderId);
+
+      return { folderIds, fileIds };
+    } catch (error) {
+      throw new Error('Failed to fetch child folders');
+    }
+  },
+
   createFolder: async (folderData) => {
     try {
       const folder = await prisma.folder.create({
@@ -115,18 +154,29 @@ const folderServices = {
     }
   },
 
-  deleteTrashContents: async (folderId) => {
+  deleteFolder: async (folderId) => {
     try {
-      await prisma.file.deleteMany({
-        where: { folderId },
+      await prisma.folder.delete({
+        where: {
+          id: folderId,
+        },
       });
+    } catch (error) {
+      throw new Error('Failed to delete folder');
+    }
+  },
+
+  deleteFolders: async (trashFolderId, folderIdArray) => {
+    try {
       await prisma.folder.deleteMany({
         where: {
-          parentFolderId: folderId,
+          id: {
+            in: folderIdArray,
+          },
         },
       });
       const trashFolder = await prisma.folder.findUnique({
-        where: { id: folderId },
+        where: { id: trashFolderId },
       });
       return trashFolder;
     } catch (error) {

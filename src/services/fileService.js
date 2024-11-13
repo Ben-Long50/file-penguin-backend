@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import { deleteFromCloudinary } from '../utils/cloudinary.js';
 
 const fileServices = {
   getAllFilesByUser: async (userId) => {
@@ -106,8 +107,13 @@ const fileServices = {
 
   deleteFile: async (fileId) => {
     try {
+      const file = await prisma.file.findUnique({
+        where: { id: Number(fileId) },
+      });
+
+      await deleteFromCloudinary(file.uploadId);
       await prisma.file.delete({
-        where: { id: fileId },
+        where: { id: Number(fileId) },
       });
     } catch (error) {
       throw new Error('Failed to delete file');

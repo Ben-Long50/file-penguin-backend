@@ -35,4 +35,18 @@ const uploadToCloudinary = async (req, res, next) => {
   }
 };
 
+export const deleteFromCloudinary = (publicId) => {
+  try {
+    console.log('cloudinary');
+
+    const result = cloudinary.uploader.destroy(publicId);
+    if (result.result === 'ok') {
+      return result;
+    }
+    throw new Error('Error deleting image');
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
 export default uploadToCloudinary;

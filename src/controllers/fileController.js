@@ -25,12 +25,11 @@ const fileController = {
         return newTitle;
       };
       try {
-        console.log(req.fileUrls);
-
         const filesData = req.fileUrls.map((url) => ({
           ownerId: req.user.id,
           folderId: Number(req.params.folderId),
           url: url.secure_url,
+          uploadId: url.public_id,
           title: parseTitle(url.original_filename, url.format),
           ext: url.format,
         }));
@@ -91,8 +90,8 @@ const fileController = {
 
   deleteFile: async (req, res) => {
     try {
-      const folder = await fileServices.deleteFile(req.params.fileId);
-      res.status(200).json(folder);
+      await fileServices.deleteFile(req.params.fileId);
+      res.status(200).json({ message: 'File deleted successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
