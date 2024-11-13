@@ -7,39 +7,18 @@ const router = express.Router();
 
 router.post(
   '/folders/:folderId/files',
-  cors(),
   authMiddleware,
   fileController.uploadFiles,
 );
 
-router.post(
-  '/files/:fileId',
-  cors(),
-  authMiddleware,
-  fileController.changeFileName,
-);
+router.post('/files/:fileId', authMiddleware, fileController.changeFileName);
 
-router.get('/files', cors(), authMiddleware, fileController.getAllFiles);
+router.get('/files', authMiddleware, fileController.getAllFiles);
 
-router.get(
-  '/files/:fileId',
-  cors(),
-  authMiddleware,
-  fileController.downloadFile,
-);
+router.get('/files/:fileId', authMiddleware, fileController.downloadFile);
 
-router.put(
-  '/files/:fileId',
-  cors(),
-  authMiddleware,
-  fileController.addFileToFolder,
-);
+router.put('/files/:fileId', authMiddleware, fileController.addFileToFolder);
 
-router.delete(
-  '/files/:fileId',
-  cors(),
-  authMiddleware,
-  fileController.deleteFile,
-);
+router.delete('/files/:fileId', authMiddleware, fileController.deleteFile);
 
 export default router;

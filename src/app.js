@@ -21,7 +21,13 @@ const limiter = rateLimit({
   max: 100,
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  }),
+);
 
 app.use(logger('dev'));
 app.use(express.json());
