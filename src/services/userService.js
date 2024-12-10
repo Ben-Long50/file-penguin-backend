@@ -31,8 +31,6 @@ const userServices = {
 
   getUserByUsername: async (username) => {
     try {
-      console.log(username);
-
       const user = await prisma.user.findUnique({
         where: { username },
       });

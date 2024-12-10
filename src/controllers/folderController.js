@@ -30,7 +30,7 @@ const folderController = {
   },
 
   createFolder: [
-    body('title', 'Title must be a minimum of 1 character')
+    body('title', 'Title must be a minimum of 3 characters')
       .trim()
       .isLength({ min: 3 })
       .escape(),
@@ -38,7 +38,7 @@ const folderController = {
     async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json(errors.array());
+        res.status(400).json({ errors: errors.array() });
       } else {
         try {
           const folderData = {

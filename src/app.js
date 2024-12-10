@@ -7,7 +7,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
-import userRouter from './routes/userRouter.js';
+import authRouter from './routes/authRouter.js';
 import folderRouter from './routes/folderRouter.js';
 import fileRouter from './routes/fileRouter.js';
 
@@ -38,7 +38,7 @@ app.use(helmet());
 
 app.use(limiter);
 
-app.use('/', userRouter);
+app.use('/', authRouter);
 app.use('/', folderRouter);
 app.use('/', fileRouter);
 

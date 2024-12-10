@@ -7,8 +7,7 @@ const fileController = {
   getAllFiles: async (req, res) => {
     try {
       const files = await fileServices.getAllFilesByUser(req.user.id);
-      console.log(files);
-      res.status(200).json(files);
+      res.status(200).json({ files });
     } catch (error) {
       res.send(500).json({ error: error.message });
     }
