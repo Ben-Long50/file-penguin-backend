@@ -4,8 +4,6 @@ import folderController from '../controllers/folderController.js';
 
 const router = express.Router();
 
-router.post('/folders', authMiddleware, folderController.createFolder);
-
 router.get('/folders', authMiddleware, folderController.getFolders);
 
 router.get(
@@ -13,6 +11,8 @@ router.get(
   authMiddleware,
   folderController.getFolderContents,
 );
+
+router.post('/folders', authMiddleware, folderController.createFolder);
 
 router.post(
   '/folders/:folderId',
