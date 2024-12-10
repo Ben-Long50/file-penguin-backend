@@ -93,7 +93,7 @@ const folderController = {
       );
       res.status(200).json(parentFolder);
     } catch (error) {
-      res.status(500).json([{ msg: error.message }]);
+      res.status(500).json(error.message);
     }
   },
 
